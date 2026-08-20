@@ -46,11 +46,9 @@ def lambda_handler(event, context):
             try:
                 asset_df = raw_df.xs(ticker, level=1, axis=1).copy()
                 
-                # Standardize column naming conventions
                 asset_df.columns = [col.capitalize() for col in asset_df.columns]
                 asset_df.dropna(subset=['Open', 'High', 'Low', 'Close'], inplace=True)
                 
-                # Turn columns into pure numeric floats so the backtester doesn't crash
                 for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
                     if col in asset_df.columns:
                         asset_df[col] = pd.to_numeric(asset_df[col], errors='coerce')
@@ -61,7 +59,6 @@ def lambda_handler(event, context):
                     print(f"Skipping {ticker}: Only {len(asset_df)} data points. Need 200 minimum.")
                     continue
                 
-                # Run the backtest engine
                 bt = Backtest(asset_df, SimpleMovingAverageCrossover, cash=10000, commission=0.0)
                 stats = bt.run()
                 
