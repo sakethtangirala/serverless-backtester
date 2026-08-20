@@ -1,0 +1,5 @@
+.env
+.venv
+data/
+results/
+make_data.py
